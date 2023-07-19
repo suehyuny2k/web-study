@@ -1,0 +1,18 @@
+/* 전체에 적용 */
+* {
+    font-family: 'Jua', sans-serif;
+}
+
+body {
+    background-color: #333;
+}
+
+#jumbotron {
+    margin-top: 30px;
+    /* 텍스트 가운데 정렬 */
+    text-align: center
+}
+
+#review-button {
+    width: 100%;
+}

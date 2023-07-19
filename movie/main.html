@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간편 영화 후기</title>
+    
+    <!-- inclue css -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- css연결 -->
+    <link rel="stylesheet" href="./main.css"/>
+    <!-- 폰트 링크 https://fonts.google.com/specimen/Jua?query=jua&subset=korean -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">    
+
+
+</head>
+<body>
+    <nav class="navbar bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="https://plus.unsplash.com/premium_photo-1688045802023-60a42a082776?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw3fHx8ZW58MHx8fHx8&auto=format&fit=crop&w=500&q=60" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+            간편 영화 후기
+          </a>
+        </div>
+      </nav>
+    
+
+    <!-- 컨테이너 https://getbootstrap.com/docs/5.3/layout/containers/ -->
+    <!-- jumbotron https://getbootstrap.com/docs/4.0/components/jumbotron/ -->
+    <div class="container">
+        <div class="jumbotron" id="jumbotron" style="background:white;">
+            <h1 class="display-4">인기/최신 영화에 한마디씩!</h1>
+            <p class="lead">themoviedb라는 아주 훌륭한 무료 영화 데이터베이스 플랫폼 API를 사용하여 영화정보를 가져왔습니다.</p>
+            <hr class="my-4">
+            <p>키 값은 임의로 사관학교에서 생성했지만 언제 막힐지 몰라요! 사용량이 정려져있거든요!</p>
+            <p>따라서 여러분 프로젝트땐, 키를 직접 발급 받아보세요</p>
+            <p class="lead">
+            <a class="btn btn-danger" href="#" role="button">themoviedb로 키발급 받으러가기</a>
+            </p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3" id="movie-list">
+            <div class="col mb-4">
+              <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <button type="button" class="btn btn-success" id="review-button" onclick="review()"> 리뷰보기</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- modal은 어느 곳이든 붙여넣을 수 있다. 평상시에는 안보이다가 불러오면 쓰는 것이다 -->
+        <!-- https://getbootstrap.com/docs/4.4/components/modal/#via-javascript -->
+        <div class="modal" id="review-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">후기</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                  <input type="text" class="form-control" id="review" style="width:70%"/>
+                  <button type="button" class="btn btn-primary" onclick="addReview()">후기 쓰기</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <script>
+        let target_id = 0;
+        $(document).ready(function() {
+            $.ajax({
+                url: "https://api.themoviedb.org/3/movie/popular?api_key=9fd6de2254739a37e6e905906272373e&page=1",
+                data: {"key":"value"},
+                type: "POST",
+                success: function(json){
+                    console.log(json)
+                    // 위에 한칸 만들어 놓은것을 지움
+                    $("#movie-list").html('')
+                    let movie_list = json.results;
+
+
+                    for(let i=0;i<movie_list.length;i++){
+                        let card = ` <div class="col mb-4">
+                                        <div class="card">
+                                            <img src="${'https://image.tmdb.org/t/p/w500/'+movie_list[i].poster_path}" class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                            <h5 class="card-title">${movie_list[i].original_title}</h5>
+                                            <button type="button" class="btn btn-success" id="review-button" onclick="review(${movie_list[i].id})"> 리뷰보기</button>
+                                            </div>
+                                        </div>
+                                    </div>`
+
+                        $("#movie-list").append(card)
+                    }
+
+                },
+                error: function(err){
+
+                }
+            })
+        })
+        function review(id) {
+            target_id = id
+            $('#review-modal').modal('show')
+
+            $.ajax({
+                url: `http://universeapi.net/review/list?movie_id=${id}`,
+                data: {},
+                type: "GET",
+                success: function(json){
+                    console.log(json.data)
+                    let reviews = json.data;
+                    $(".modal-body").html('')
+                    for(let i=0;i<reviews.length;i++){
+                        $(".modal-body").append('<p>%{reviews}</p>')
+                    }
+
+                },
+                error: function(err){
+                }
+            })
+        }
+
+        function addReview() {
+            let review = $("#review").val();
+            let review_html = `<p>${review}</p>`
+
+            $.ajax({
+                url: `http://universeapi.net/review/add`,
+                data: {
+                    movie_id:target_id,
+                    review:review
+                },
+                type:"POST",
+                success:function(json){
+                    console.log(json)
+                }
+            })
+
+            $(".modal-body").append(review_html);
+            $("#review").val("");
+        }
+
+
+
+
+    </script>
+    
+
+</body>
+</html>
+
+
